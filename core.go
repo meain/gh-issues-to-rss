@@ -50,11 +50,11 @@ func saveBackup(repo string, content []byte) error {
 func loadBackup(repo string) ([]byte, error) {
 	path := cacheLocation + "/" + repo + "/issues.json"
 	fi, err := os.Stat(path)
-	if time.Now().Sub(fi.ModTime()) > 12*time.Hour {
-		return nil, nil
-	}
 	if err != nil {
 		return nil, err
+	}
+	if time.Now().Sub(fi.ModTime()) > 12*time.Hour {
+		return nil, nil
 	}
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
