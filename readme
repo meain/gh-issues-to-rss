@@ -2,7 +2,7 @@ Ever wanted to passively watch prs/issues in a repo without subscribing to every
 
 Yup me too.
 
-This gives you an rss feed. Ideally one entry when it opens.
+This gives you an rss feed. One entry when it opens and one when it closes.
 
 --------------------------------------------
 
@@ -28,7 +28,7 @@ Caveats
 
 TODO
 - Return Not Modified headers if time is > file modify time
-- Enable filters to get only select data (query files in url)
+- Enable filters to get only select data (using url query params)
   - When new issue opens
   - When new pr opens
   - When issue closes
