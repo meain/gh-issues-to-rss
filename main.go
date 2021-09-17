@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 	"time"
 )
@@ -36,10 +37,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("Usage:", os.Args[0], "[repo] [--server]")
+		fmt.Println("Usage:", path.Base(os.Args[0]), "[repo] [--server]")
 	} else {
 		var repo = os.Args[1]
-		if repo != "--server" {
+		if repo == "--help" {
+			fmt.Println("Usage:", path.Base(os.Args[0]), "[repo] [--server]")
+		} else if repo != "--server" {
 			atom, err := getIssueFeed(repo)
 			if err != nil {
 				log.Fatal("Unable to create feed for repo", repo, ":", err)
