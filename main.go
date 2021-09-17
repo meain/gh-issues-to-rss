@@ -52,8 +52,14 @@ func main() {
 			http.HandleFunc("/", handler)
 
 			//Use the default DefaultServeMux.
-			fmt.Println("Starting server on :8080")
-			err := http.ListenAndServe(":8080", nil)
+			port := os.Getenv("PORT")
+			if port == "" {
+				port = ":8080"
+			} else {
+				port = ":" + port
+			}
+			fmt.Println("Starting server on", port)
+			err := http.ListenAndServe(port, nil)
 			if err != nil {
 				log.Fatal(err)
 			}
