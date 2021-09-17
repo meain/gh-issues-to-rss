@@ -1,0 +1,1 @@
+web: gh-issues-to-rss --server
