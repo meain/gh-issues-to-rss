@@ -1,5 +1,14 @@
-Ever wanted to passively watch prs/issues in a repo without subscribing to the entire thing?
+Ever wanted to passively watch prs/issues in a repo without subscribing to every event?
 
 Yup me too.
 
 This gives you an rss feed. Ideally one entry when it opens.
+
+--------------------------------------------
+
+TODO
+- Enable filters to get only select data (query files in url)
+  - When new issue opens
+  - When new pr opens
+  - When issue closes
+  - When pr closes
