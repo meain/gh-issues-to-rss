@@ -6,6 +6,12 @@ This gives you an rss feed. Ideally one entry when it opens.
 
 --------------------------------------------
 
+Usage
+  gh-issues-to-rss --server  # in your server
+  http://<url>/<org>/<repo>  # use this in your feed reader
+
+--------------------------------------------
+
 TODO
 - Enable filters to get only select data (query files in url)
   - When new issue opens
