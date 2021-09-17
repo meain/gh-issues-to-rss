@@ -77,10 +77,8 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		if entry.PullRequest.URL != "" {
 			entryType = "pr"
 		}
-		d, err := time.Parse("2006-01-02T15:04:05Z07:00", entry.CreatedAt)
-		if err != nil {
-			fmt.Println("Unable to parse date:", err)
-		}
+		createTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.CreatedAt)
+		closeTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.ClosedAt)
 
 		if entry.State == "closed" {
 			items = append(items, &feeds.Item{
@@ -88,7 +86,7 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 				Link:        &feeds.Link{Href: entry.URL},
 				Description: entry.Body,
 				Author:      &feeds.Author{Name: entry.User.Login},
-				Created:     d,
+				Created:     closeTime,
 			})
 		}
 		items = append(items, &feeds.Item{
@@ -96,7 +94,7 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 			Link:        &feeds.Link{Href: entry.URL},
 			Description: entry.Body,
 			Author:      &feeds.Author{Name: entry.User.Login},
-			Created:     d,
+			Created:     createTime,
 		})
 
 	}
