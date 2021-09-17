@@ -14,11 +14,11 @@ Usage
   http://<url>/<org>/<repo>  # use this in your feed reader
 
 Example
-  nvim-treesitter/nvim-tree [pr]: Adds fish shell textobjects
-  nvim-treesitter/nvim-tree [pr]: Add Elixir textobjects
-  meain/dotfiles            [issue]: Just a thought
-  meain/dotfiles            [issue]: Screenshots
-  nvim-treesitter/nvim-tree [issue]: Question: is it expected that inner function objects include braces?
+  nvim-treesitter/nvim-tree [pr-open]: Adds fish shell textobjects
+  nvim-treesitter/nvim-tree [pr-close]: Add Elixir textobjects
+  meain/dotfiles            [issue-close]: Just a thought
+  meain/dotfiles            [issue-close]: Screenshots
+  nvim-treesitter/nvim-tree [issue-open]: Question: is it expected that inner function objects include braces?
 
 --------------------------------------------
 

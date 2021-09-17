@@ -71,23 +71,33 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		Created: now,
 	}
 
-	items := make([]*feeds.Item, len(data))
-	for i, entry := range data {
-		marker := "[issue]: "
+	var items []*feeds.Item
+	for _, entry := range data {
+		entryType := "issue"
 		if entry.PullRequest.URL != "" {
-			marker = "[pr]: "
+			entryType = "pr"
 		}
 		d, err := time.Parse("2006-01-02T15:04:05Z07:00", entry.CreatedAt)
 		if err != nil {
 			fmt.Println("Unable to parse date:", err)
 		}
-		items[i] = &feeds.Item{
-			Title:       marker + entry.Title,
+
+		if entry.State == "closed" {
+			items = append(items, &feeds.Item{
+				Title:       "[" + entryType + "-" + "closed" + "]: " + entry.Title,
+				Link:        &feeds.Link{Href: entry.URL},
+				Description: entry.Body,
+				Author:      &feeds.Author{Name: entry.User.Login},
+				Created:     d,
+			})
+		}
+		items = append(items, &feeds.Item{
+			Title:       "[" + entryType + "-" + "open" + "]: " + entry.Title,
 			Link:        &feeds.Link{Href: entry.URL},
 			Description: entry.Body,
 			Author:      &feeds.Author{Name: entry.User.Login},
 			Created:     d,
-		}
+		})
 
 	}
 	feed.Items = items
