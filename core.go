@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/feeds"
@@ -80,11 +81,13 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		createTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.CreatedAt)
 		closeTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.ClosedAt)
 
+		fmt.Println("entry.Body:", entry.Body)
 		if entry.State == "closed" {
 			items = append(items, &feeds.Item{
 				Title:       "[" + entryType + "-" + "closed" + "]: " + entry.Title,
 				Link:        &feeds.Link{Href: entry.URL},
-				Description: entry.Body,
+				Description: strings.ReplaceAll(entry.Body, "\n", "<br>"),
+				Content:     strings.ReplaceAll(entry.Body, "\n", "<br>"),
 				Author:      &feeds.Author{Name: entry.User.Login},
 				Created:     closeTime,
 			})
@@ -92,7 +95,8 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		items = append(items, &feeds.Item{
 			Title:       "[" + entryType + "-" + "open" + "]: " + entry.Title,
 			Link:        &feeds.Link{Href: entry.URL},
-			Description: entry.Body,
+			Description: strings.ReplaceAll(entry.Body, "\n", "<br>"),
+			Content:     strings.ReplaceAll(entry.Body, "\n", "<br>"),
 			Author:      &feeds.Author{Name: entry.User.Login},
 			Created:     createTime,
 		})
