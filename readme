@@ -27,6 +27,7 @@ Caveats
 - We invalidate internal cache only every 12 hours
 
 TODO
+- Return Not Modified headers if time is > file modify time
 - Enable filters to get only select data (query files in url)
   - When new issue opens
   - When new pr opens
