@@ -10,6 +10,13 @@ Usage
   gh-issues-to-rss --server  # in your server
   http://<url>/<org>/<repo>  # use this in your feed reader
 
+Example
+  nvim-treesitter/nvim-tree [pr]: Adds fish shell textobjects
+  nvim-treesitter/nvim-tree [pr]: Add Elixir textobjects
+  meain/dotfiles            [issue]: Just a thought
+  meain/dotfiles            [issue]: Screenshots
+  nvim-treesitter/nvim-tree [issue]: Question: is it expected that inner function objects include braces?
+
 --------------------------------------------
 
 TODO
