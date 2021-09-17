@@ -70,7 +70,7 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		if entry.PullRequest.URL != "" {
 			marker = "[pr]: "
 		}
-		d, err := time.Parse("2006-01-02T15:04:05Z07:00", entry.UpdatedAt)
+		d, err := time.Parse("2006-01-02T15:04:05Z07:00", entry.CreatedAt)
 		if err != nil {
 			fmt.Println("Unable to parse date:", err)
 		}
