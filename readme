@@ -22,6 +22,10 @@ Example
 
 --------------------------------------------
 
+Caveats
+- Github rate limits to 60 requests per hour
+- We invalidate internal cache only every 12 hours
+
 TODO
 - Enable filters to get only select data (query files in url)
   - When new issue opens

@@ -49,6 +49,13 @@ func saveBackup(repo string, content []byte) error {
 
 func loadBackup(repo string) ([]byte, error) {
 	path := cacheLocation + "/" + repo + "/issues.json"
+	fi, err := os.Stat(path)
+	if time.Now().Sub(fi.ModTime()) > 12*time.Hour {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -94,7 +101,7 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 
 func getData(repo string) ([]byte, error) {
 	content, err := loadBackup(repo)
-	if err != nil {
+	if err != nil || content == nil {
 		fmt.Println("No cache fount for " + repo + ", fetching from Github")
 		resp, err := makeRequest(repo)
 		if err != nil {
