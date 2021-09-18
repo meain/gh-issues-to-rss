@@ -81,7 +81,6 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		createTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.CreatedAt)
 		closeTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.ClosedAt)
 
-		fmt.Println("entry.Body:", entry.Body)
 		if entry.State == "closed" {
 			items = append(items, &feeds.Item{
 				Title:       "[" + entryType + "-" + "closed" + "]: " + entry.Title,
