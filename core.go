@@ -93,7 +93,7 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		}
 		items = append(items, &feeds.Item{
 			Title:       "[" + entryType + "-" + "open" + "]: " + entry.Title,
-			Link:        &feeds.Link{Href: entry.URL},
+			Link:        &feeds.Link{Href: entry.HTMLURL},
 			Description: strings.ReplaceAll(entry.Body, "\n", "<br>"),
 			Content:     strings.ReplaceAll(entry.Body, "\n", "<br>"),
 			Author:      &feeds.Author{Name: entry.User.Login},

@@ -52,6 +52,7 @@ func TestRssGenerationSimple(t *testing.T) {
       <title>[issue-open]: Sample Entry</title>
       <link>https://example.com</link>
       <description>Some body</description>
+      <content:encoded><![CDATA[Some body]]></content:encoded>
       <pubDate>Wed, 08 Sep 2021 12:44:47 +0000</pubDate>
     </item>
   </channel>
@@ -60,7 +61,7 @@ func TestRssGenerationSimple(t *testing.T) {
 		GithubIssue{
 			CreatedAt: "2021-09-08T12:44:47Z",
 			Title:     "Sample Entry",
-			URL:       "https://example.com",
+			HTMLURL:   "https://example.com",
 			Body:      "Some body",
 		},
 	}
@@ -78,18 +79,21 @@ func TestRssGenerationWithClosed(t *testing.T) {
       <title>[issue-open]: Sample Entry</title>
       <link>https://example.com</link>
       <description>Some body</description>
+      <content:encoded><![CDATA[Some body]]></content:encoded>
       <pubDate>Wed, 08 Sep 2021 12:44:47 +0000</pubDate>
     </item>
     <item>
       <title>[issue-closed]: Another Entry</title>
       <link>https://example.com</link>
       <description>Another body</description>
+      <content:encoded><![CDATA[Another body]]></content:encoded>
       <pubDate>Fri, 08 Oct 2021 12:44:47 +0000</pubDate>
     </item>
     <item>
       <title>[issue-open]: Another Entry</title>
       <link>https://example.com</link>
       <description>Another body</description>
+      <content:encoded><![CDATA[Another body]]></content:encoded>
       <pubDate>Wed, 08 Sep 2021 12:44:47 +0000</pubDate>
     </item>
   </channel>
@@ -98,7 +102,7 @@ func TestRssGenerationWithClosed(t *testing.T) {
 		GithubIssue{
 			CreatedAt: "2021-09-08T12:44:47Z",
 			Title:     "Sample Entry",
-			URL:       "https://example.com",
+			HTMLURL:   "https://example.com",
 			Body:      "Some body",
 		},
 		GithubIssue{
@@ -106,7 +110,7 @@ func TestRssGenerationWithClosed(t *testing.T) {
 			ClosedAt:  "2021-10-08T12:44:47Z",
 			State:     "closed",
 			Title:     "Another Entry",
-			URL:       "https://example.com",
+			HTMLURL:   "https://example.com",
 			Body:      "Another body",
 		},
 	}
