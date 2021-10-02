@@ -42,7 +42,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	m, ok := params["m"]
 	modes := RssModes{true, true, true, true}
 	if ok {
-		getModesFromList(m)
+		modes = getModesFromList(m)
 	}
 
 	l, ok := params["l"]
