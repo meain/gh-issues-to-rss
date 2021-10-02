@@ -20,6 +20,17 @@ Example
   meain/dotfiles            [issue-close]: Screenshots
   nvim-treesitter/nvim-tree [issue-open]: Question: is it expected that inner function objects include braces?
 
+You can pass in extra arg in the url to filter things down:
+
+- `m`: specify modes
+  - ic: issue-closed
+  - io: issue-open
+  - pc: pr-closed
+  - po: pr-open
+  > Eg: http://<url>/<org>/<repo>?m=io&m=po  # just open issues and prs
+- `l`: speify label
+  > Eg: http://<url>/<org>/<repo>?l=good-first-issue  # just issus/prs labeled good-first-issue
+
 --------------------------------------------
 
 Caveats
