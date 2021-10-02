@@ -13,6 +13,13 @@ import (
 	"github.com/gorilla/feeds"
 )
 
+type RssModes struct {
+	IssueOpen    bool
+	IssuesClosed bool
+	PROpen       bool
+	PRClosed     bool
+}
+
 func makeRequest(repo string) ([]byte, error) {
 	response, err := http.Get(baseUrl + repo + "/issues?state=all")
 	if err != nil {
@@ -64,7 +71,7 @@ func loadBackup(repo string) ([]byte, error) {
 	return b, nil
 }
 
-func generateRss(repo string, data []GithubIssue) (string, error) {
+func generateRss(repo string, data []GithubIssue, modes RssModes) (string, error) {
 	now := time.Now()
 	feed := &feeds.Feed{
 		Title:   repo,
@@ -82,14 +89,19 @@ func generateRss(repo string, data []GithubIssue) (string, error) {
 		closeTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.ClosedAt)
 
 		if entry.State == "closed" {
-			items = append(items, &feeds.Item{
-				Title:       "[" + entryType + "-" + "closed" + "]: " + entry.Title,
-				Link:        &feeds.Link{Href: entry.HTMLURL},
-				Description: strings.ReplaceAll(entry.Body, "\n", "<br>"),
-				Content:     strings.ReplaceAll(entry.Body, "\n", "<br>"),
-				Author:      &feeds.Author{Name: entry.User.Login},
-				Created:     closeTime,
-			})
+			if !((entryType == "pr" && !modes.PRClosed) || (entryType == "issue" && !modes.IssuesClosed)) {
+				items = append(items, &feeds.Item{
+					Title:       "[" + entryType + "-" + "closed" + "]: " + entry.Title,
+					Link:        &feeds.Link{Href: entry.HTMLURL},
+					Description: strings.ReplaceAll(entry.Body, "\n", "<br>"),
+					Content:     strings.ReplaceAll(entry.Body, "\n", "<br>"),
+					Author:      &feeds.Author{Name: entry.User.Login},
+					Created:     closeTime,
+				})
+			}
+		}
+		if (entryType == "pr" && !modes.PROpen) || (entryType == "issue" && !modes.IssueOpen) {
+			continue
 		}
 		items = append(items, &feeds.Item{
 			Title:       "[" + entryType + "-" + "open" + "]: " + entry.Title,
@@ -127,7 +139,7 @@ func getData(repo string) ([]byte, error) {
 	return content, nil
 }
 
-func getIssueFeed(repo string) (string, error) {
+func getIssueFeed(repo string, modes RssModes) (string, error) {
 	content, err := getData(repo)
 	if err != nil {
 		return "", err
@@ -136,7 +148,7 @@ func getIssueFeed(repo string) (string, error) {
 	if err := json.Unmarshal(content, &data); err != nil {
 		return "", err
 	}
-	rss, err := generateRss(repo, data)
+	rss, err := generateRss(repo, data, modes)
 	if err != nil {
 		return "", err
 	}

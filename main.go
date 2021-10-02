@@ -20,13 +20,31 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := r.URL.Path
+	params := r.URL.Query()
+	m, ok := params["m"]
+	modes := RssModes{true, true, true, true}
+	if ok {
+		modes = RssModes{false, false, false, false}
+		for _, entry := range m {
+			switch entry {
+			case "io":
+				modes.IssueOpen = true
+			case "ic":
+				modes.IssuesClosed = true
+			case "po":
+				modes.PROpen = true
+			case "pc":
+				modes.PRClosed = true
+			}
+		}
+	}
 	splits := strings.Split(url, "/")
 	if len(splits) != 3 { // url starts with /
 		http.Error(w, "Invalid request: call `<url>/org/repo`", http.StatusBadRequest)
 		return
 	}
 	repo := splits[1] + "/" + splits[2]
-	rss, err := getIssueFeed(repo)
+	rss, err := getIssueFeed(repo, modes)
 	if err != nil {
 		http.Error(w, "Unable to fetch atom feed", http.StatusNotFound)
 		return
@@ -43,7 +61,7 @@ func main() {
 		if repo == "--help" {
 			fmt.Println("Usage:", path.Base(os.Args[0]), "[repo] [--server]")
 		} else if repo != "--server" {
-			atom, err := getIssueFeed(repo)
+			atom, err := getIssueFeed(repo, RssModes{true, true, true, true})
 			if err != nil {
 				log.Fatal("Unable to create feed for repo", repo, ":", err)
 			}
