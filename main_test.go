@@ -1,12 +1,14 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"gopkg.in/h2non/gock.v1"
 )
 
@@ -182,5 +184,47 @@ func TestFetchRssWithGoodFirstLabel(t *testing.T) {
 	if strings.Contains(got, shouldntContent) {
 		t.Fatalf("Rss feed content unnecessary stuff")
 	}
+}
 
+func TestCliFlagParsing(t *testing.T) {
+	oldArgs := os.Args
+	defer func() { os.Args = oldArgs }()
+
+	tests := []struct {
+		name   string
+		input  []string
+		repo   string
+		mode   RssModes
+		labels []string
+	}{
+		{"simple", []string{"meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil},
+		{"with-labels", []string{"-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, []string{"good-first-issue"}},
+		{"with-modes", []string{"-m", "ic,po", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, nil},
+		{"with-modes-and-labels", []string{"-m", "ic,po", "-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, []string{"good-first-issue"}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			flag.CommandLine = flag.NewFlagSet("gh-issues-to-rss", flag.ExitOnError)
+			// we need a value to set Args[0] to, cause flag begins parsing at Args[1]
+			items := []string{"gh-issues-to-rss"}
+			for _, i := range tc.input {
+				items = append(items, i)
+			}
+			os.Args = items
+			var repo, mode, labels, valid = getCliArgs()
+			if !valid {
+				t.Fatalf("Unable to parse cli arg")
+			}
+			if !cmp.Equal(tc.repo, repo) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.repo, repo))
+			}
+			if !cmp.Equal(tc.mode, mode) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.mode, mode))
+			}
+			if !cmp.Equal(tc.labels, labels) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.labels, labels))
+			}
+
+		})
+	}
 }
