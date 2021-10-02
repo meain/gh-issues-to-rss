@@ -1,25 +1,29 @@
 package main
 
+type GithubIssueLabel struct {
+	Name string `json:"name"`
+}
+
 type GithubIssue struct {
-	ActiveLockReason      interface{}   `json:"active_lock_reason"`
-	Assignee              interface{}   `json:"assignee"`
-	Assignees             []interface{} `json:"assignees"`
-	AuthorAssociation     string        `json:"author_association"`
-	Body                  string        `json:"body"`
-	ClosedAt              string        `json:"closed_at"`
-	Comments              int64         `json:"comments"`
-	CommentsURL           string        `json:"comments_url"`
-	CreatedAt             string        `json:"created_at"`
-	EventsURL             string        `json:"events_url"`
-	HTMLURL               string        `json:"html_url"`
-	ID                    int64         `json:"id"`
-	Labels                []interface{} `json:"labels"`
-	LabelsURL             string        `json:"labels_url"`
-	Locked                bool          `json:"locked"`
-	Milestone             interface{}   `json:"milestone"`
-	NodeID                string        `json:"node_id"`
-	Number                int64         `json:"number"`
-	PerformedViaGithubApp interface{}   `json:"performed_via_github_app"`
+	ActiveLockReason  interface{}   `json:"active_lock_reason"`
+	Assignee          interface{}   `json:"assignee"`
+	Assignees         []interface{} `json:"assignees"`
+	AuthorAssociation string        `json:"author_association"`
+	Body              string        `json:"body"`
+	ClosedAt          string        `json:"closed_at"`
+	Comments          int64         `json:"comments"`
+	CommentsURL       string        `json:"comments_url"`
+	CreatedAt         string        `json:"created_at"`
+	EventsURL         string        `json:"events_url"`
+	HTMLURL           string        `json:"html_url"`
+	ID                int64         `json:"id"`
+	Labels            []GithubIssueLabel `json:"labels"`
+	LabelsURL             string      `json:"labels_url"`
+	Locked                bool        `json:"locked"`
+	Milestone             interface{} `json:"milestone"`
+	NodeID                string      `json:"node_id"`
+	Number                int64       `json:"number"`
+	PerformedViaGithubApp interface{} `json:"performed_via_github_app"`
 	PullRequest           struct {
 		DiffURL  string `json:"diff_url"`
 		HTMLURL  string `json:"html_url"`

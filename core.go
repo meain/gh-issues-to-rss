@@ -71,7 +71,16 @@ func loadBackup(repo string) ([]byte, error) {
 	return b, nil
 }
 
-func generateRss(repo string, data []GithubIssue, modes RssModes) (string, error) {
+func isIn(item string, items []string) bool {
+	for _, i := range items {
+		if i == item {
+			return true
+		}
+	}
+	return false
+}
+
+func generateRss(repo string, data []GithubIssue, modes RssModes, labels []string) (string, error) {
 	now := time.Now()
 	feed := &feeds.Feed{
 		Title:   repo,
@@ -80,7 +89,21 @@ func generateRss(repo string, data []GithubIssue, modes RssModes) (string, error
 	}
 
 	var items []*feeds.Item
+	var labelUnavailable = true
 	for _, entry := range data {
+		for _, label := range labels {
+			var issueLabels []string
+			for _, i := range entry.Labels {
+				issueLabels = append(issueLabels, i.Name)
+			}
+			if !isIn(label, issueLabels) {
+				labelUnavailable = false
+				break
+			}
+		}
+		if !labelUnavailable {
+			continue
+		}
 		entryType := "issue"
 		if entry.PullRequest.URL != "" {
 			entryType = "pr"
@@ -139,7 +162,7 @@ func getData(repo string) ([]byte, error) {
 	return content, nil
 }
 
-func getIssueFeed(repo string, modes RssModes) (string, error) {
+func getIssueFeed(repo string, modes RssModes, labels []string) (string, error) {
 	content, err := getData(repo)
 	if err != nil {
 		return "", err
@@ -148,7 +171,7 @@ func getIssueFeed(repo string, modes RssModes) (string, error) {
 	if err := json.Unmarshal(content, &data); err != nil {
 		return "", err
 	}
-	rss, err := generateRss(repo, data, modes)
+	rss, err := generateRss(repo, data, modes, labels)
 	if err != nil {
 		return "", err
 	}
