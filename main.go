@@ -32,7 +32,17 @@ func getModesFromList(m []string) RssModes {
 	return modes
 }
 
+func setupResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	if (*r).Method == "OPTIONS" {
+		return
+	}
 	if r.Method != "GET" {
 		http.Error(w, "Method is not supported", http.StatusNotFound)
 		return
