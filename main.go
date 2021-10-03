@@ -65,16 +65,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, rss)
 }
 
-func getCliArgs() (string, RssModes, []string, bool) {
+func getCliArgs() (string, RssModes, []string, bool, bool) {
 	var modes string
 	var labels string
+	var server bool
 	flag.StringVar(&modes, "m", "", "Comma separated list of modes [io,ic,po,pc]")
 	flag.StringVar(&labels, "l", "", "Comma separated list of labels")
+	flag.BoolVar(&server, "server", false, "display in uppercase")
 
 	flag.Parse() // after declaring flags we need to call it
 
-	if len(flag.Args()) != 1 {
-		return "", RssModes{}, nil, false
+	if !server && len(flag.Args()) != 1 {
+		return "", RssModes{}, nil, false, false
 	}
 	modeItems := RssModes{true, true, true, true}
 	if modes != "" {
@@ -84,8 +86,12 @@ func getCliArgs() (string, RssModes, []string, bool) {
 	if labels != "" {
 		labelItems = strings.Split(labels, ",")
 	}
+	var repo = ""
+	if !server {
+		repo = flag.Args()[0]
+	}
 
-	return flag.Args()[0], modeItems, labelItems, true
+	return repo, modeItems, labelItems, server, true
 }
 
 func main() {
@@ -94,12 +100,12 @@ func main() {
 		flag.PrintDefaults()
 	}
 
-	var repo, modes, labels, valid = getCliArgs()
+	var repo, modes, labels, server, valid = getCliArgs()
 	if !valid {
 		flag.Usage()
 		os.Exit(1)
 	}
-	if repo != "--server" {
+	if !server {
 		atom, err := getIssueFeed(repo, modes, labels)
 		if err != nil {
 			log.Fatal("Unable to create feed for repo", repo, ":", err)

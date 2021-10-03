@@ -196,11 +196,13 @@ func TestCliFlagParsing(t *testing.T) {
 		repo   string
 		mode   RssModes
 		labels []string
+		server bool
 	}{
-		{"simple", []string{"meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil},
-		{"with-labels", []string{"-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, []string{"good-first-issue"}},
-		{"with-modes", []string{"-m", "ic,po", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, nil},
-		{"with-modes-and-labels", []string{"-m", "ic,po", "-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, []string{"good-first-issue"}},
+		{"simple", []string{"meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil, false},
+		{"with-labels", []string{"-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, []string{"good-first-issue"}, false},
+		{"with-modes", []string{"-m", "ic,po", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, nil, false},
+		{"with-modes-and-labels", []string{"-m", "ic,po", "-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, []string{"good-first-issue"}, false},
+		{"server", []string{"--server"}, "", RssModes{true, true, true, true}, nil, true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -211,7 +213,7 @@ func TestCliFlagParsing(t *testing.T) {
 				items = append(items, i)
 			}
 			os.Args = items
-			var repo, mode, labels, valid = getCliArgs()
+			var repo, mode, labels, server, valid = getCliArgs()
 			if !valid {
 				t.Fatalf("Unable to parse cli arg")
 			}
@@ -224,7 +226,9 @@ func TestCliFlagParsing(t *testing.T) {
 			if !cmp.Equal(tc.labels, labels) {
 				t.Fatalf("values are not the same %s", cmp.Diff(tc.labels, labels))
 			}
-
+			if !cmp.Equal(tc.server, server) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.server, server))
+			}
 		})
 	}
 }
