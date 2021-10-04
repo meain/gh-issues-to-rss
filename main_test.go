@@ -12,6 +12,18 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
+func TestWebserverPing(t *testing.T) {
+	request, _ := http.NewRequest(http.MethodGet, "/_ping", nil)
+	response := httptest.NewRecorder()
+	handler(response, request)
+	got := response.Body.String()
+
+	if !strings.Contains(got, "PONG") {
+		t.Fatalf("Did not get PONG back from server")
+	}
+
+}
+
 func TestFetchRssAll(t *testing.T) {
 	data := []GithubIssue{
 		GithubIssue{

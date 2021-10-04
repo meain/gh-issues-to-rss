@@ -48,6 +48,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := r.URL.Path
+	if url == "/_ping" {
+		io.WriteString(w, "PONG")
+		return
+	}
 	params := r.URL.Query()
 	m, ok := params["m"]
 	modes := RssModes{true, true, true, true}
