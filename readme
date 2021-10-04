@@ -1,8 +1,9 @@
 Ever wanted to passively watch prs/issues in a repo without subscribing to every event?
 
-Yup me too.
+Yup, me too.
 
 This gives you an rss feed. One entry when it opens and one when it closes.
+That too, filterable. I know!
 
 --------------------------------------------
 
