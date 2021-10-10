@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>gh-issues-to-rss</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        --black: #000;
+        --white: #fff;
+        --grey: #ccc;
+        --green: #c4f198;
+        box-sizing: border-box;
+      }
+      .grey {
+        margin-bottom: 10px;
+        color: var(--grey);
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inconsolata", monospace;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 100vh;
+      }
+      .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: var(--green);
+        color: var(--black);
+        padding: 50px 20px;
+        width: 50%;
+      }
+      .final-url {
+        text-align: center;
+      }
+      h3 {
+        margin-bottom: 5px;
+        margin-top: 30px;
+      }
+      input {
+        border: 2px solid var(--grey);
+        border-radius: 4px;
+        font-family: "Inconsolata", monospace;
+      }
+      .content {
+        margin: 50px;
+        height: 100%;
+        max-width: 700px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 50px;
+      }
+      input#url {
+        font-size: 1.4rem;
+        font-weight: 100;
+        padding: 10px 20px;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      .modes {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .modes > input {
+        margin-right: 5px;
+      }
+      .labels {
+        margin-bottom: 50px;
+      }
+      .labels-inner {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .labels-inner > label {
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+      }
+      input#labels {
+        flex: 1;
+        font-weight: 100;
+        padding: 5px 10px;
+      }
+      .labels > span {
+        text-align: right;
+        width: 100%;
+        display: block;
+      }
+
+      @media only screen and (max-width: 900px) {
+        body {
+          display: unset;
+        }
+        .header {
+          width: 100%;
+        }
+        .content {
+          margin-top: 0px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h2>gh-issues-to-rss</h2>
+      <div class="final-url">
+        <div id="furl">Edit settings to get url</div>
+        <button id="copy">Copy</button>
+      </div>
+    </div>
+    <div class="content">
+      <h3>Github URL</h3>
+      <span class="grey">Github URL for the project</span>
+      <div class="url">
+        <input
+          name="url"
+          id="url"
+          type="text"
+          value=""
+          placeholder="Enter Github URL"
+        />
+      </div>
+      <h3>Type</h3>
+      <span class="grey">Type of notifications</span>
+      <div class="modes">
+        <div>
+          <input name="io" id="io" type="checkbox" value="" />
+          <label for="io">Issue open</label>
+        </div>
+        <div>
+          <input name="ic" id="ic" type="checkbox" value="" />
+          <label for="ic">Issue close</label>
+        </div>
+        <div>
+          <input name="po" id="po" type="checkbox" value="" />
+          <label for="po">PR open</label>
+        </div>
+        <div>
+          <input name="pc" id="pc" type="checkbox" value="" />
+          <label for="pc">PR close</label>
+        </div>
+      </div>
+      <h3>Labels</h3>
+      <span class="grey">Labels to filter results</span>
+      <div class="labels">
+        <div class="labels-inner">
+          <label for="labels">Labels(optional):</label>
+          <input
+            id="labels"
+            name="labels"
+            type="text"
+            value=""
+            placeholder="good-first-issue,documentation"
+          />
+        </div>
+        <span class="grey">* comma separated list, uses AND</span>
+      </div>
+    </div>
+    <script>
+      window.onload = function () {
+        const urlInput = document.getElementById("url");
+        const ioInput = document.getElementById("io");
+        const icInput = document.getElementById("ic");
+        const poInput = document.getElementById("po");
+        const pcInput = document.getElementById("pc");
+        const labelsInput = document.getElementById("labels");
+        const furl = document.getElementById("furl");
+        const copy = document.getElementById("copy");
+        function updateUrl() {
+          const url = urlInput.value;
+          const io = ioInput.checked;
+          const ic = icInput.checked;
+          const po = poInput.checked;
+          const pc = pcInput.checked;
+          const labels = labelsInput.value;
+
+          let finalUrl = "";
+          if (!url.startsWith("https://github.com/")) {
+            furl.innerText = "Invalid URL";
+            return;
+          } else {
+            const splits = url.split("/");
+            if (splits.length != 5) {
+              furl.innerText = "Invalid URL";
+              return;
+            }
+            finalUrl =
+              window.location.origin + "/" + splits.splice(3, 4).join("/");
+          }
+
+          let modes = [];
+          if (io) {
+            modes.push("m=io");
+          }
+          if (ic) {
+            modes.push("m=ic");
+          }
+          if (po) {
+            modes.push("m=po");
+          }
+          if (pc) {
+            modes.push("m=pc");
+          }
+          const modesString = modes.join("&");
+          let labelsString = "";
+          if (labels.length > 0) {
+            let labelItems = labels.split(",").map((l) => "l=" + l);
+            labelsString = labelItems.join("&");
+          }
+          if (modesString.length > 0) {
+            finalUrl += "?" + modesString;
+            if (labelsString.length > 0) {
+              finalUrl += "&" + labelsString;
+            }
+          } else if (labelsString.length > 0) {
+            finalUrl += "?" + labelsString;
+          }
+          furl.innerText = finalUrl;
+        }
+
+        const inputs = {
+          url: urlInput,
+          io: ioInput,
+          ic: icInput,
+          po: poInput,
+          pc: pcInput,
+          labels: labelsInput,
+        };
+        for (let i of Object.keys(inputs)) {
+          inputs[i].onchange = function () {
+            updateUrl();
+          };
+        }
+        copy.onclick = function () {
+          navigator.clipboard.writeText(furl.innerText);
+          copy.innerText = "Copied!";
+          setTimeout(function () {
+            copy.innerText = "Copy";
+          }, 1000);
+        };
+      };
+    </script>
+  </body>
+</html>

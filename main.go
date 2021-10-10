@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -48,6 +50,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := r.URL.Path
+	if url == "/" {
+		data, err := ioutil.ReadFile("index.html")
+		if err != nil {
+			http.Error(w, "Unable to fetch index.html", http.StatusNotFound)
+			return
+		}
+		http.ServeContent(w, r, "index.html", time.Now(), bytes.NewReader(data))
+		return
+	}
 	if url == "/_ping" {
 		io.WriteString(w, "PONG")
 		return
