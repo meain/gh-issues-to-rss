@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 	"time"
 )
@@ -52,11 +51,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	url := r.URL.Path
 	if url == "/" {
-		path, err := os.Executable()
-		if err != nil {
-			log.Println(err)
-		}
-		data, err := ioutil.ReadFile(filepath.Dir(path) + "/index.html")
+		data, err := ioutil.ReadFile("index.html")
 		if err != nil {
 			http.Error(w, "Unable to fetch index.html", http.StatusNotFound)
 			return
