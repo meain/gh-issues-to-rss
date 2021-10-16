@@ -91,6 +91,7 @@ func generateRss(repo string, data []GithubIssue, modes RssModes, labels []strin
 	var items []*feeds.Item
 	var labelUnavailable = true
 	for _, entry := range data {
+		labelUnavailable = true
 		for _, label := range labels {
 			var issueLabels []string
 			for _, i := range entry.Labels {
