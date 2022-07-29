@@ -1,21 +1,23 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"strings"
 	"time"
+	_ "embed"
 )
 
 var baseUrl = "https://api.github.com/repos/"
 var cacheLocation = "/tmp/gh-issues-to-rss-cache"
+
+//go:embed index.html
+var index string
 
 func getModesFromList(m []string) RssModes {
 	modes := RssModes{false, false, false, false}
@@ -51,12 +53,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	url := r.URL.Path
 	if url == "/" {
-		data, err := ioutil.ReadFile("index.html")
-		if err != nil {
-			http.Error(w, "Unable to fetch index.html", http.StatusNotFound)
-			return
-		}
-		http.ServeContent(w, r, "index.html", time.Now(), bytes.NewReader(data))
+		http.ServeContent(w, r, "index.html", time.Now(), strings.NewReader(index))
 		return
 	}
 	if url == "/_ping" {
