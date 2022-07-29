@@ -7,8 +7,8 @@ That too, filterable. I know!
 
 --------------------------------------------
 
-> Demo server: https://gh-issues-to-rss.herokuapp.com
-> Example: https://gh-issues-to-rss.herokuapp.com/meain/evil-textobj-tree-sitter
+> Demo server: https://gh-issues-to-rss.fly.dev
+> Example: https://gh-issues-to-rss.fly.dev/meain/evil-textobj-tree-sitter
 
 Usage
   gh-issues-to-rss --server  # in your server
