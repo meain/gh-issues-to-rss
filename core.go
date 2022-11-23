@@ -149,7 +149,7 @@ func generateRss(repo string, data []GithubIssue, modes RssModes, labels []strin
 func getData(repo string) ([]byte, error) {
 	content, err := loadBackup(repo)
 	if err != nil || content == nil {
-		fmt.Println("No cache fount for " + repo + ", fetching from Github")
+		fmt.Println("No cache found for " + repo + ", fetching from Github")
 		resp, err := makeRequest(repo)
 		if err != nil {
 			return nil, err
