@@ -203,29 +203,33 @@ func TestCliFlagParsing(t *testing.T) {
 	defer func() { os.Args = oldArgs }()
 
 	tests := []struct {
-		name   string
-		input  []string
-		repo   string
-		mode   RssModes
-		labels []string
-		server bool
+		name      string
+		input     []string
+		repo      string
+		mode      RssModes
+		labels    []string
+		notlabels []string
+		users     []string
+		notusers  []string
+		server    bool
 	}{
-		{"simple", []string{"meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil, false},
-		{"with-labels", []string{"-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, []string{"good-first-issue"}, false},
-		{"with-modes", []string{"-m", "ic,po", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, nil, false},
-		{"with-modes-and-labels", []string{"-m", "ic,po", "-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, []string{"good-first-issue"}, false},
-		{"server", []string{"--server"}, "", RssModes{true, true, true, true}, nil, true},
+		{"simple", []string{"meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil, nil, nil, nil, false},
+		{"with-labels", []string{"-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, []string{"good-first-issue"}, nil, nil, nil, false},
+		{"with-modes", []string{"-m", "ic,po", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, nil, nil, nil, nil, false},
+		{"with-modes-and-labels", []string{"-m", "ic,po", "-l", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{false, true, true, false}, []string{"good-first-issue"}, nil, nil, nil, false},
+		{"server", []string{"--server"}, "", RssModes{true, true, true, true}, nil, nil, nil, nil, true},
+		{"with-not-labels", []string{"-nl", "good-first-issue", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil, []string{"good-first-issue"}, nil, nil, false},
+		{"with-users-and-not-users", []string{"-u", "meain", "-nu", "niaem", "meain/dotfiles"}, "meain/dotfiles", RssModes{true, true, true, true}, nil, nil, []string{"meain"}, []string{"niaem"}, false},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			flag.CommandLine = flag.NewFlagSet("gh-issues-to-rss", flag.ExitOnError)
 			// we need a value to set Args[0] to, cause flag begins parsing at Args[1]
 			items := []string{"gh-issues-to-rss"}
-			for _, i := range tc.input {
-				items = append(items, i)
-			}
+			items = append(items, tc.input...)
+
 			os.Args = items
-			var repo, mode, labels, server, valid = getCliArgs()
+			var repo, mode, labels, notlabels, users, notusers, server, valid = getCliArgs()
 			if !valid {
 				t.Fatalf("Unable to parse cli arg")
 			}
@@ -237,6 +241,15 @@ func TestCliFlagParsing(t *testing.T) {
 			}
 			if !cmp.Equal(tc.labels, labels) {
 				t.Fatalf("values are not the same %s", cmp.Diff(tc.labels, labels))
+			}
+			if !cmp.Equal(tc.notlabels, notlabels) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.notlabels, labels))
+			}
+			if !cmp.Equal(tc.users, users) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.users, users))
+			}
+			if !cmp.Equal(tc.notusers, notusers) {
+				t.Fatalf("values are not the same %s", cmp.Diff(tc.notusers, notusers))
 			}
 			if !cmp.Equal(tc.server, server) {
 				t.Fatalf("values are not the same %s", cmp.Diff(tc.server, server))

@@ -26,7 +26,7 @@ func makeRequest(repo string) ([]byte, error) {
 		return nil, err
 	}
 	if response.StatusCode != 200 {
-		return nil, errors.New("Unable to fetch data. Is the repo valid?")
+		return nil, errors.New("unable to fetch data, make sure you have a valid repo")
 	}
 
 	defer response.Body.Close()
@@ -80,7 +80,7 @@ func isIn(item string, items []string) bool {
 	return false
 }
 
-func generateRss(repo string, data []GithubIssue, modes RssModes, labels []string) (string, error) {
+func generateRss(repo string, data []GithubIssue, modes RssModes, labels, notlabels, usres, notusers []string) (string, error) {
 	now := time.Now()
 	feed := &feeds.Feed{
 		Title:   repo,
@@ -89,22 +89,9 @@ func generateRss(repo string, data []GithubIssue, modes RssModes, labels []strin
 	}
 
 	var items []*feeds.Item
-	var labelUnavailable = true
-	for _, entry := range data {
-		labelUnavailable = true
-		for _, label := range labels {
-			var issueLabels []string
-			for _, i := range entry.Labels {
-				issueLabels = append(issueLabels, i.Name)
-			}
-			if !isIn(label, issueLabels) {
-				labelUnavailable = false
-				break
-			}
-		}
-		if !labelUnavailable {
-			continue
-		}
+	fdata := filterIssues(data, labels, notlabels, usres, notusers)
+
+	for _, entry := range fdata {
 		entryType := "issue"
 		if entry.PullRequest.URL != "" {
 			entryType = "pr"
@@ -163,7 +150,7 @@ func getData(repo string) ([]byte, error) {
 	return content, nil
 }
 
-func getIssueFeed(repo string, modes RssModes, labels []string) (string, error) {
+func getIssueFeed(repo string, modes RssModes, labels, notlabels, users, notusers []string) (string, error) {
 	content, err := getData(repo)
 	if err != nil {
 		return "", err
@@ -172,9 +159,71 @@ func getIssueFeed(repo string, modes RssModes, labels []string) (string, error) 
 	if err := json.Unmarshal(content, &data); err != nil {
 		return "", err
 	}
-	rss, err := generateRss(repo, data, modes, labels)
+	rss, err := generateRss(repo, data, modes, labels, notlabels, users, notusers)
 	if err != nil {
 		return "", err
 	}
 	return rss, nil
+}
+
+func filterIssues(issues []GithubIssue, labels, notlabels, users, notusers []string) []GithubIssue {
+	var fi []GithubIssue
+
+	for _, issue := range issues {
+		var issueLabels []string
+		for _, i := range issue.Labels {
+			issueLabels = append(issueLabels, i.Name)
+		}
+
+		bk := false
+		for _, label := range notlabels {
+			if isIn(label, issueLabels) {
+				bk = true
+				break
+			}
+		}
+
+		if bk  {
+			continue
+		}
+
+		for _, user := range notusers {
+			if issue.User.Login == user {
+				bk = true
+				break
+			}
+		}
+
+		if bk  {
+			continue
+		}
+
+		for _, label := range labels {
+			if !isIn(label, issueLabels) {
+				bk = true
+				break
+			}
+		}
+
+		if bk {
+			continue
+		}
+
+		bk = len(users) != 0
+
+		for _, user := range users {
+			if issue.User.Login == user {
+				bk = false
+				break
+			}
+		}
+
+		if bk  {
+			continue
+		}
+
+		fi = append(fi, issue)
+	}
+
+	return fi
 }

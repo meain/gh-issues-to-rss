@@ -65,7 +65,7 @@ func TestRssGenerationSimple(t *testing.T) {
 			Body:      "Some body",
 		},
 	}
-	content, err := generateRss("meain/dotfiles", data, RssModes{true, true, true, true}, []string{})
+		content, err := generateRss("meain/dotfiles", data, RssModes{true, true, true, true}, []string{}, []string{}, []string{}, []string{})
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}
@@ -114,7 +114,7 @@ func TestRssGenerationWithClosed(t *testing.T) {
 			Body:      "Another body",
 		},
 	}
-	content, err := generateRss("meain/dotfiles", data, RssModes{true, true, true, true}, []string{})
+		content, err := generateRss("meain/dotfiles", data, RssModes{true, true, true, true}, []string{}, []string{}, []string{}, []string{})
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}
@@ -156,7 +156,7 @@ func TestRssGenerationWithClosedButOnlyOpen(t *testing.T) {
 			Body:      "Another body",
 		},
 	}
-	content, err := generateRss("meain/dotfiles", data, RssModes{true, false, true, false}, []string{})
+	content, err := generateRss("meain/dotfiles", data, RssModes{true, false, true, false}, []string{}, []string{}, []string{}, []string{})
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}

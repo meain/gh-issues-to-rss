@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"path"
 	"strings"
 	"time"
-	_ "embed"
 )
 
 var baseUrl = "https://api.github.com/repos/"
@@ -67,18 +67,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		modes = getModesFromList(m)
 	}
 
-	l, ok := params["l"]
-	var labels []string
-	for _, label := range l {
-		labels = append(labels, label)
-	}
 	splits := strings.Split(url, "/")
 	if len(splits) != 3 { // url starts with /
 		http.Error(w, "Invalid request: call `<url>/org/repo`", http.StatusBadRequest)
 		return
 	}
 	repo := splits[1] + "/" + splits[2]
-	rss, err := getIssueFeed(repo, modes, labels)
+
+	labels := params["l"]
+	notlabels := params["nl"]
+	users := params["u"]
+	notusers := params["nu"]
+	rss, err := getIssueFeed(repo, modes, labels, notlabels, users, notusers)
 	if err != nil {
 		http.Error(w, "Unable to fetch atom feed", http.StatusNotFound)
 		return
@@ -87,33 +87,60 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, rss)
 }
 
-func getCliArgs() (string, RssModes, []string, bool, bool) {
-	var modes string
-	var labels string
-	var server bool
+func getCliArgs() (string, RssModes, []string, []string, []string, []string, bool, bool) {
+	var (
+		modes     string
+		labels    string
+		notlabels string
+		users     string
+		notusers  string
+		server    bool
+	)
+
 	flag.StringVar(&modes, "m", "", "Comma separated list of modes [io,ic,po,pc]")
-	flag.StringVar(&labels, "l", "", "Comma separated list of labels")
+	flag.StringVar(&labels, "l", "", "Comma separated list of labels to include")
+	flag.StringVar(&notlabels, "nl", "", "Comma separated list of labels to exclude")
+	flag.StringVar(&users, "u", "", "Comma separated list of users to include")
+	flag.StringVar(&notusers, "nu", "", "Comma separated list of users to exclude")
 	flag.BoolVar(&server, "server", false, "display in uppercase")
 
 	flag.Parse() // after declaring flags we need to call it
 
 	if !server && len(flag.Args()) != 1 {
-		return "", RssModes{}, nil, false, false
+		return "", RssModes{}, nil, nil, nil, nil, false, false
 	}
+
 	modeItems := RssModes{true, true, true, true}
 	if modes != "" {
 		modeItems = getModesFromList(strings.Split(modes, ","))
 	}
+
 	var labelItems []string
-	if labels != "" {
+	if labels != "" { // prevents empty "" item
 		labelItems = strings.Split(labels, ",")
 	}
+
+	var notLabelItems []string
+	if notlabels != "" {
+		notLabelItems = strings.Split(notlabels, ",")
+	}
+
+	var userItems []string
+	if users != "" {
+		userItems = strings.Split(users, ",")
+	}
+
+	var notUserItems []string
+	if notusers != "" {
+		notUserItems = strings.Split(notusers, ",")
+	}
+
 	var repo = ""
 	if !server {
 		repo = flag.Args()[0]
 	}
 
-	return repo, modeItems, labelItems, server, true
+	return repo, modeItems, labelItems, notLabelItems, userItems, notUserItems, server, true
 }
 
 func main() {
@@ -122,13 +149,13 @@ func main() {
 		flag.PrintDefaults()
 	}
 
-	var repo, modes, labels, server, valid = getCliArgs()
+	var repo, modes, labels, notlabels, users, notusers, server, valid = getCliArgs()
 	if !valid {
 		flag.Usage()
 		os.Exit(1)
 	}
 	if !server {
-		atom, err := getIssueFeed(repo, modes, labels)
+		atom, err := getIssueFeed(repo, modes, labels, notlabels, users, notusers)
 		if err != nil {
 			log.Fatal("Unable to create feed for repo", repo, ":", err)
 		}
