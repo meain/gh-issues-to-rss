@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -43,6 +43,7 @@
       }
       .final-url {
         text-align: center;
+        font-size: 1.5em;
       }
       h3 {
         margin-bottom: 5px;
@@ -81,24 +82,21 @@
       .modes > input {
         margin-right: 5px;
       }
-      .labels {
-        margin-bottom: 50px;
-      }
-      .labels-inner {
+      .filters-inner {
         display: flex;
         flex-wrap: wrap;
       }
-      .labels-inner > label {
+      .filters-inner > label {
         margin-right: 5px;
         display: flex;
         align-items: center;
       }
-      input#labels {
+      .filters-inner > input {
         flex: 1;
         font-weight: 100;
         padding: 5px 10px;
       }
-      .labels > span {
+      .filters > span {
         text-align: right;
         width: 100%;
         display: block;
@@ -119,7 +117,7 @@
   </head>
   <body>
     <div class="header">
-      <h2>gh-issues-to-rss</h2>
+      <h1>gh-issues-to-rss</h1>
       <div class="final-url">
         <div id="furl">Edit settings to get url</div>
         <button id="copy">Copy</button>
@@ -157,11 +155,13 @@
           <label for="pc">PR close</label>
         </div>
       </div>
-      <h3>Labels</h3>
-      <span class="grey">Labels to filter results</span>
-      <div class="labels">
-        <div class="labels-inner">
-          <label for="labels">Labels(optional):</label>
+      <h3>Filters (Optional)</h3>
+      <span class="grey"
+        >Filter down the results based on certain conditions</span
+      >
+      <div class="filters">
+        <div class="filters-inner">
+          <label for="labels">Labels:</label>
           <input
             id="labels"
             name="labels"
@@ -172,6 +172,48 @@
         </div>
         <span class="grey">* comma separated list, uses AND</span>
       </div>
+
+      <div class="filters">
+        <div class="filters-inner">
+          <label for="not-labels">Ignored Labels:</label>
+          <input
+            id="not-labels"
+            name="not-labels"
+            type="text"
+            value=""
+            placeholder="ci,test"
+          />
+        </div>
+        <span class="grey">* comma separated list, uses OR</span>
+      </div>
+
+      <div class="filters">
+        <div class="filters-inner">
+          <label for="users">Users:</label>
+          <input
+            id="users"
+            name="users"
+            type="text"
+            value=""
+            placeholder="meain"
+          />
+        </div>
+        <span class="grey">* comma separated list, uses AND</span>
+      </div>
+
+      <div class="filters">
+        <div class="filters-inner">
+          <label for="not-users">Ignored Users:</label>
+          <input
+            id="not-users"
+            name="not-users"
+            type="text"
+            value=""
+            placeholder="dependabot,github"
+          />
+        </div>
+        <span class="grey">* comma separated list, uses OR</span>
+      </div>
     </div>
     <script>
       window.onload = function () {
@@ -181,73 +223,45 @@
         const poInput = document.getElementById("po");
         const pcInput = document.getElementById("pc");
         const labelsInput = document.getElementById("labels");
+        const nlabelsInput = document.getElementById("not-labels");
+        const usersInput = document.getElementById("users");
+        const nusersInput = document.getElementById("not-users");
         const furl = document.getElementById("furl");
         const copy = document.getElementById("copy");
+
         function updateUrl() {
+          let finalURL = "Invalid URL";
+          let qps = [];
+
           const url = urlInput.value;
-          const io = ioInput.checked;
-          const ic = icInput.checked;
-          const po = poInput.checked;
-          const pc = pcInput.checked;
-          const labels = labelsInput.value;
+          const splits = url.split("/");
 
-          let finalUrl = "";
-          if (!url.startsWith("https://github.com/")) {
-            furl.innerText = "Invalid URL";
-            return;
-          } else {
-            const splits = url.split("/");
-            if (splits.length != 5) {
-              furl.innerText = "Invalid URL";
-              return;
-            }
-            finalUrl =
-              window.location.origin + "/" + splits.splice(3, 4).join("/");
-          }
+          if (!url.startsWith("https://github.com/") || splits.length != 5) { return }
 
-          let modes = [];
-          if (io) {
-            modes.push("m=io");
-          }
-          if (ic) {
-            modes.push("m=ic");
-          }
-          if (po) {
-            modes.push("m=po");
-          }
-          if (pc) {
-            modes.push("m=pc");
-          }
-          const modesString = modes.join("&");
-          let labelsString = "";
-          if (labels.length > 0) {
-            let labelItems = labels.split(",").map((l) => "l=" + l);
-            labelsString = labelItems.join("&");
-          }
-          if (modesString.length > 0) {
-            finalUrl += "?" + modesString;
-            if (labelsString.length > 0) {
-              finalUrl += "&" + labelsString;
-            }
-          } else if (labelsString.length > 0) {
-            finalUrl += "?" + labelsString;
-          }
-          furl.innerText = finalUrl;
+          finalURL = window.location.origin + "/" + splits.splice(3, 4).join("/");
+
+          if (ioInput.checked) {qps.push("m=io")}
+          if (icInput.checked) {qps.push("m=ic")}
+          if (poInput.checked) {qps.push("m=po")}
+          if (pcInput.checked) {qps.push("m=pc")}
+
+          if (labelsInput.value.length > 0) {qps = qps.concat(labelsInput.value.split(",").map((l) => "l=" + l))}
+          if (nlabelsInput.value.length > 0) {qps = qps.concat(nlabelsInput.value.split(",").map((l) => "nl=" + l))}
+          if (usersInput.value.length > 0) {qps = qps.concat(usersInput.value.split(",").map((l) => "u=" + l))}
+          if (nusersInput.value.length > 0) {qps = qps.concat(nusersInput.value.split(",").map((l) => "nu=" + l))}
+
+          if (qps.length > 0) {finalURL += "?" + qps.join("&")}
+          furl.innerText = finalURL;
         }
 
-        const inputs = {
-          url: urlInput,
-          io: ioInput,
-          ic: icInput,
-          po: poInput,
-          pc: pcInput,
-          labels: labelsInput,
-        };
-        for (let i of Object.keys(inputs)) {
-          inputs[i].onchange = function () {
-            updateUrl();
-          };
+        const inputs = [
+          urlInput, ioInput, icInput, poInput, pcInput,
+          labelsInput, nlabelsInput, usersInput, nusersInput
+        ];
+        for (let i of inputs) {
+          i.onchange = function () {updateUrl();};
         }
+
         copy.onclick = function () {
           navigator.clipboard.writeText(furl.innerText);
           copy.innerText = "Copied!";

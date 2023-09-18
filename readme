@@ -36,7 +36,8 @@ You can pass in extra arg in the url to filter things down:
 - `nu`: specify user to exclude
   > Eg: http://<url>/<org>/<repo>?nu=meain  # just issus/prs not opened by meain
 
-All filters can be used multiple times and they will be treated as `OR` filters.
+All filters can be used multiple times. Positive filters are ANDed
+together, negative filters are ORed together.
 
 --------------------------------------------
 
