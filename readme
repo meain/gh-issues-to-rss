@@ -31,6 +31,12 @@ You can pass in extra arg in the url to filter things down:
   > Eg: http://<url>/<org>/<repo>?m=io&m=po  # just open issues and prs
 - `l`: speify label
   > Eg: http://<url>/<org>/<repo>?l=good-first-issue  # just issus/prs labeled good-first-issue
+- `u`: specify user
+  > Eg: http://<url>/<org>/<repo>?u=meain  # just issus/prs opened by meain
+- `nu`: specify user to exclude
+  > Eg: http://<url>/<org>/<repo>?nu=meain  # just issus/prs not opened by meain
+
+All filters can be used multiple times and they will be treated as `OR` filters.
 
 --------------------------------------------
 
