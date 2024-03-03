@@ -1,5 +1,33 @@
 package main
 
+type Modes struct {
+	IssueOpen    bool
+	IssuesClosed bool
+	PROpen       bool
+	PRClosed     bool
+}
+
+// If running as a server
+type ServerConfig struct {
+	Port         int
+	CacheTimeout int64
+}
+
+// If running on individual repo
+type RunConfig struct {
+	Modes     Modes
+	Repo      string
+	Labels    []string
+	NotLabels []string
+	Users     []string
+	NotUsers  []string
+}
+
+type config struct {
+	RunConfig    *RunConfig
+	ServerConfig *ServerConfig
+}
+
 type GithubIssueLabel struct {
 	Name string `json:"name"`
 }

@@ -4,21 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	"io"
+
+	"io/fs"
+
 	"github.com/gorilla/feeds"
 )
-
-type RssModes struct {
-	IssueOpen    bool
-	IssuesClosed bool
-	PROpen       bool
-	PRClosed     bool
-}
 
 func makeRequest(repo string) ([]byte, error) {
 	response, err := http.Get(baseUrl + repo + "/issues?state=all")
@@ -31,7 +27,7 @@ func makeRequest(repo string) ([]byte, error) {
 
 	defer response.Body.Close()
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(io.Reader(response.Body))
 	if err != nil {
 		return nil, err
 	}
@@ -48,26 +44,30 @@ func saveBackup(repo string, content []byte) error {
 		}
 	}
 
-	err := ioutil.WriteFile(path+"/issues.json", content, 0644)
+	err := os.WriteFile(path+"/issues.json", content, fs.FileMode(0644))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func loadBackup(repo string) ([]byte, error) {
+func loadBackup(repo string, timeout time.Duration) ([]byte, error) {
 	path := cacheLocation + "/" + repo + "/issues.json"
+
 	fi, err := os.Stat(path)
 	if err != nil {
 		return nil, err
 	}
-	if time.Now().Sub(fi.ModTime()) > 12*time.Hour {
+
+	if time.Now().Sub(fi.ModTime()) > timeout {
 		return nil, nil
 	}
-	b, err := ioutil.ReadFile(path)
+
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+
 	return b, nil
 }
 
@@ -80,16 +80,16 @@ func isIn(item string, items []string) bool {
 	return false
 }
 
-func generateRss(repo string, data []GithubIssue, modes RssModes, labels, notlabels, usres, notusers []string) (string, error) {
+func generateRss(data []GithubIssue, rc RunConfig) (string, error) {
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:   repo,
-		Link:    &feeds.Link{Href: "https://github.com/" + repo},
+		Title:   rc.Repo,
+		Link:    &feeds.Link{Href: "https://github.com/" + rc.Repo},
 		Created: now,
 	}
 
 	var items []*feeds.Item
-	fdata := filterIssues(data, labels, notlabels, usres, notusers)
+	fdata := filterIssues(data, rc)
 
 	for _, entry := range fdata {
 		entryType := "issue"
@@ -100,7 +100,7 @@ func generateRss(repo string, data []GithubIssue, modes RssModes, labels, notlab
 		closeTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", entry.ClosedAt)
 
 		if entry.State == "closed" {
-			if !((entryType == "pr" && !modes.PRClosed) || (entryType == "issue" && !modes.IssuesClosed)) {
+			if !((entryType == "pr" && !rc.Modes.PRClosed) || (entryType == "issue" && !rc.Modes.IssuesClosed)) {
 				items = append(items, &feeds.Item{
 					Title:       "[" + entryType + "-" + "closed" + "]: " + entry.Title,
 					Link:        &feeds.Link{Href: entry.HTMLURL},
@@ -111,7 +111,7 @@ func generateRss(repo string, data []GithubIssue, modes RssModes, labels, notlab
 				})
 			}
 		}
-		if (entryType == "pr" && !modes.PROpen) || (entryType == "issue" && !modes.IssueOpen) {
+		if (entryType == "pr" && !rc.Modes.PROpen) || (entryType == "issue" && !rc.Modes.IssueOpen) {
 			continue
 		}
 		items = append(items, &feeds.Item{
@@ -133,8 +133,8 @@ func generateRss(repo string, data []GithubIssue, modes RssModes, labels, notlab
 	return rss, nil
 }
 
-func getData(repo string) ([]byte, error) {
-	content, err := loadBackup(repo)
+func getData(repo string, cacheTimeout time.Duration) ([]byte, error) {
+	content, err := loadBackup(repo, cacheTimeout)
 	if err != nil || content == nil {
 		fmt.Println("No cache found for " + repo + ", fetching from Github")
 		resp, err := makeRequest(repo)
@@ -150,23 +150,25 @@ func getData(repo string) ([]byte, error) {
 	return content, nil
 }
 
-func getIssueFeed(repo string, modes RssModes, labels, notlabels, users, notusers []string) (string, error) {
-	content, err := getData(repo)
+func getIssueFeed(rc RunConfig, cacheTimeout time.Duration) (string, error) {
+	content, err := getData(rc.Repo, cacheTimeout)
 	if err != nil {
 		return "", err
 	}
+
 	data := []GithubIssue{}
 	if err := json.Unmarshal(content, &data); err != nil {
 		return "", err
 	}
-	rss, err := generateRss(repo, data, modes, labels, notlabels, users, notusers)
+
+	rss, err := generateRss(data, rc)
 	if err != nil {
 		return "", err
 	}
 	return rss, nil
 }
 
-func filterIssues(issues []GithubIssue, labels, notlabels, users, notusers []string) []GithubIssue {
+func filterIssues(issues []GithubIssue, rc RunConfig) []GithubIssue {
 	var fi []GithubIssue
 
 	for _, issue := range issues {
@@ -176,29 +178,29 @@ func filterIssues(issues []GithubIssue, labels, notlabels, users, notusers []str
 		}
 
 		bk := false
-		for _, label := range notlabels {
+		for _, label := range rc.NotLabels {
 			if isIn(label, issueLabels) {
 				bk = true
 				break
 			}
 		}
 
-		if bk  {
+		if bk {
 			continue
 		}
 
-		for _, user := range notusers {
+		for _, user := range rc.NotUsers {
 			if issue.User.Login == user {
 				bk = true
 				break
 			}
 		}
 
-		if bk  {
+		if bk {
 			continue
 		}
 
-		for _, label := range labels {
+		for _, label := range rc.Labels {
 			if !isIn(label, issueLabels) {
 				bk = true
 				break
@@ -209,16 +211,16 @@ func filterIssues(issues []GithubIssue, labels, notlabels, users, notusers []str
 			continue
 		}
 
-		bk = len(users) != 0
+		bk = len(rc.Users) != 0
 
-		for _, user := range users {
+		for _, user := range rc.Users {
 			if issue.User.Login == user {
 				bk = false
 				break
 			}
 		}
 
-		if bk  {
+		if bk {
 			continue
 		}
 
