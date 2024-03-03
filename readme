@@ -39,8 +39,32 @@ You can pass in extra arg in the url to filter things down:
 All filters can be used multiple times. Positive filters are ANDed
 together, negative filters are ORed together.
 
+Notes
+- Github rate limits to 60 requests per hour (set GH_ISSUES_TO_RSS_GITHUB_TOKEN to PAT to increase this limit)
+- We invalidate internal cache only every 12 hours (use --cache-timeout to change this)
+
 --------------------------------------------
 
-Caveats
-- Github rate limits to 60 requests per hour
-- We invalidate internal cache only every 12 hours
+CLI help:
+
+gh-issues-to-rss [FLAGS] [repo] [--server]
+
+Server mode (use -server to switch to server mode):
+  -port int
+        port to use for server (default 8080)
+  -cache-timeout float
+        cache timeout in minutes, 0 to disable (default: 12 hours)
+Example: gh-issues-to-rss -server -port 8080 -cache-timeout 720
+
+Single repo mode:
+  -m string
+        Comma separated list of modes [io,ic,po,pc]
+  -l string
+        Comma separated list of labels to include
+  -nl string
+        Comma separated list of labels to exclude
+  -u string
+        Comma separated list of users to include
+  -nu string
+        Comma separated list of users to exclude
+Example: gh-issues-to-rss -m io,ic,po,pc -l bug,enhancement -nl invalid -u user1,user2 -nu user3,user4 org/repo
