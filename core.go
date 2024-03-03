@@ -17,10 +17,23 @@ import (
 )
 
 func makeRequest(repo string) ([]byte, error) {
-	response, err := http.Get(baseUrl + repo + "/issues?state=all")
+	// do an http get request to the github api. Add auth header if token is present
+	req, err := http.NewRequest("GET", baseUrl+repo+"/issues?state=all", nil)
 	if err != nil {
 		return nil, err
 	}
+
+	token := os.Getenv("GH_ISSUES_TO_RSS_GITHUB_TOKEN")
+	if token != "" {
+		fmt.Println("adding auth token")
+		req.Header.Add("Authorization", "Bearer"+token)
+	}
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
 	if response.StatusCode != 200 {
 		return nil, errors.New("unable to fetch data, make sure you have a valid repo")
 	}
