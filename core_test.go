@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 	"testing"
+	"time"
 
 	"os"
 
@@ -39,7 +40,7 @@ func TestBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}
-	content, err := loadBackup("meain/dotfiles")
+	content, err := loadBackup("meain/dotfiles", time.Hour)
 	if err != nil {
 		t.Fatalf("Unable to load backup file")
 	}

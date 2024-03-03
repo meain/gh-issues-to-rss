@@ -15,6 +15,7 @@ import (
 func TestWebserverPing(t *testing.T) {
 	request, _ := http.NewRequest(http.MethodGet, "/_ping", nil)
 	response := httptest.NewRecorder()
+	handler := getHandler(0)
 	handler(response, request)
 	got := response.Body.String()
 
@@ -53,6 +54,7 @@ func TestFetchRssAll(t *testing.T) {
 
 	request, _ := http.NewRequest(http.MethodGet, "/meain/dotfiles", nil)
 	response := httptest.NewRecorder()
+	handler := getHandler(0)
 	handler(response, request)
 
 	got := response.Body.String()
@@ -115,6 +117,7 @@ func TestFetchRssOpenOnly(t *testing.T) {
 
 	request, _ := http.NewRequest(http.MethodGet, "/meain/dotfiles?m=io&m=po", nil)
 	response := httptest.NewRecorder()
+	handler := getHandler(0)
 	handler(response, request)
 
 	got := response.Body.String()
@@ -171,6 +174,7 @@ func TestFetchRssWithGoodFirstLabel(t *testing.T) {
 
 	request, _ := http.NewRequest(http.MethodGet, "/meain/dotfiles?l=good-first-issue", nil)
 	response := httptest.NewRecorder()
+	handler := getHandler(0)
 	handler(response, request)
 
 	got := response.Body.String()
