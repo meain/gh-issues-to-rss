@@ -1,10 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"strings"
 	"testing"
+
+	"os"
 
 	"gopkg.in/h2non/gock.v1"
 )
@@ -28,7 +29,7 @@ func TestMakeRequest(t *testing.T) {
 func TestBackup(t *testing.T) {
 	cacheLocationBackup := cacheLocation
 	defer func() { cacheLocation = cacheLocationBackup }()
-	dir, err := ioutil.TempDir("", "gh-issues-to-rss")
+	dir, err := os.MkdirTemp("", "gh-issues-to-rss")
 	if err != nil {
 		log.Fatal("Unable to create temp directory:", err)
 	}
@@ -65,10 +66,12 @@ func TestRssGenerationSimple(t *testing.T) {
 			Body:      "Some body",
 		},
 	}
-		content, err := generateRss("meain/dotfiles", data, RssModes{true, true, true, true}, []string{}, []string{}, []string{}, []string{})
+
+	content, err := generateRss(data, RunConfig{Repo: "meain/dotfiles", Modes: Modes{true, true, true, true}})
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}
+
 	if !strings.Contains(content, rssContent) {
 		t.Fatalf("Rss feed content does not match up")
 	}
@@ -114,7 +117,7 @@ func TestRssGenerationWithClosed(t *testing.T) {
 			Body:      "Another body",
 		},
 	}
-		content, err := generateRss("meain/dotfiles", data, RssModes{true, true, true, true}, []string{}, []string{}, []string{}, []string{})
+	content, err := generateRss(data, RunConfig{Repo: "meain/dotfiles", Modes: Modes{true, true, true, true}})
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}
@@ -156,7 +159,7 @@ func TestRssGenerationWithClosedButOnlyOpen(t *testing.T) {
 			Body:      "Another body",
 		},
 	}
-	content, err := generateRss("meain/dotfiles", data, RssModes{true, false, true, false}, []string{}, []string{}, []string{}, []string{})
+	content, err := generateRss(data, RunConfig{Repo: "meain/dotfiles", Modes: Modes{true, false, true, false}})
 	if err != nil {
 		t.Fatalf("Unable to save backup file")
 	}
