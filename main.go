@@ -70,6 +70,12 @@ func getHandler(cacheTimeout time.Duration) func(http.ResponseWriter, *http.Requ
 			modes = getModesFromList(m)
 		}
 
+		// We don't want the url to be invalid just because people
+		// forgot to remove a trailing / when copy pasting the url
+		if strings.HasSuffix(url, "/") {
+			url = url[:len(url)-1]
+		}
+
 		splits := strings.Split(url, "/")
 		if len(splits) != 3 { // url starts with /
 			http.Error(w, "Invalid request: call `<url>/org/repo`", http.StatusBadRequest)
