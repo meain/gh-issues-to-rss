@@ -233,7 +233,9 @@
           let finalURL = "Invalid URL";
           let qps = [];
 
-          const url = urlInput.value;
+          let url = urlInput.value;
+          if (url.endsWith("/")) {url = url.slice(0, -1)}
+
           const splits = url.split("/");
 
           if (!url.startsWith("https://github.com/") || splits.length != 5) { return }
