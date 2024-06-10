@@ -25,7 +25,6 @@ func makeRequest(repo string) ([]byte, error) {
 
 	token := os.Getenv("GH_ISSUES_TO_RSS_GITHUB_TOKEN")
 	if token != "" {
-		fmt.Println("adding auth token")
 		req.Header.Add("Authorization", "Bearer"+token)
 	}
 
