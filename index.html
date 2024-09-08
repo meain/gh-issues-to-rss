@@ -72,26 +72,34 @@
                     <div class="space-y-6">
                         <div>
                             <label for="labels" class="block mb-1 text-gray-700">Labels:</label>
-                            <input id="labels" name="labels" type="text" placeholder="good-first-issue,documentation" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <p class="text-gray-500 text-sm mt-1">* comma separated list, uses AND</p>
+                            <div class="relative">
+                                <input id="labels" name="labels" type="text" placeholder="good-first-issue,documentation" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. All labels must match (AND logic).">ⓘ</span>
+                            </div>
                         </div>
 
                         <div>
                             <label for="not-labels" class="block mb-1 text-gray-700">Ignored Labels:</label>
-                            <input id="not-labels" name="not-labels" type="text" placeholder="ci,test" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <p class="text-gray-500 text-sm mt-1">* comma separated list, uses OR</p>
+                            <div class="relative">
+                                <input id="not-labels" name="not-labels" type="text" placeholder="ci,test" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. Any label matches (OR logic).">ⓘ</span>
+                            </div>
                         </div>
 
                         <div>
                             <label for="users" class="block mb-1 text-gray-700">Users:</label>
-                            <input id="users" name="users" type="text" placeholder="meain" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <p class="text-gray-500 text-sm mt-1">* comma separated list, uses AND</p>
+                            <div class="relative">
+                                <input id="users" name="users" type="text" placeholder="meain" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. All users must match (AND logic).">ⓘ</span>
+                            </div>
                         </div>
 
                         <div>
                             <label for="not-users" class="block mb-1 text-gray-700">Ignored Users:</label>
-                            <input id="not-users" name="not-users" type="text" placeholder="dependabot,github" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <p class="text-gray-500 text-sm mt-1">* comma separated list, uses OR</p>
+                            <div class="relative">
+                                <input id="not-users" name="not-users" type="text" placeholder="dependabot,github" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. Any user matches (OR logic).">ⓘ</span>
+                            </div>
                         </div>
                     </div>
                 </section>
