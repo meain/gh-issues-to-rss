@@ -120,10 +120,6 @@
             const nusersInput = document.getElementById("not-users");
             const furl = document.getElementById("furl");
             const copy = document.getElementById("copy");
-            const generateButton = document.getElementById("generate");
-            const rssFeedUrlSection = document.getElementById("rss-feed-url-section");
-            const rssFeedUrlInput = document.getElementById("rss-feed-url");
-            const copyRssButton = document.getElementById("copy-rss");
 
             function updateUrl() {
                 let finalURL = "Invalid URL";
@@ -167,21 +163,6 @@
                 copy.innerText = "Copied!";
                 setTimeout(function () {
                     copy.innerText = "Copy";
-                }, 1000);
-            };
-
-            generateButton.onclick = function (e) {
-                e.preventDefault();
-                const generatedUrl = updateUrl();
-                rssFeedUrlInput.value = generatedUrl;
-                rssFeedUrlSection.classList.remove("hidden");
-            };
-
-            copyRssButton.onclick = function () {
-                navigator.clipboard.writeText(rssFeedUrlInput.value);
-                copyRssButton.innerText = "Copied!";
-                setTimeout(function () {
-                    copyRssButton.innerText = "Copy";
                 }, 1000);
             };
         };
