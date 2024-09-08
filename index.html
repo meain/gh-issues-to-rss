@@ -21,73 +21,73 @@
         }
     </script>
 </head>
-<body class="font-inconsolata bg-gray-100 min-h-screen">
-    <div class="flex flex-col lg:flex-row">
-        <header class="bg-custom-green text-black p-10 lg:w-1/2 flex flex-col items-center justify-center">
-            <h1 class="text-4xl font-bold mb-6">gh-issues-to-rss</h1>
+<body class="font-inconsolata bg-gray-100 min-h-screen flex flex-col">
+    <div class="flex-grow flex flex-col lg:flex-row">
+        <header class="bg-indigo-600 text-white p-10 lg:w-1/2 flex flex-col items-center justify-center">
+            <h1 class="text-5xl font-bold mb-6">gh-issues-to-rss</h1>
             <div class="text-center">
-                <div id="furl" class="text-xl mb-2">Edit settings to get url</div>
-                <button id="copy" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Copy</button>
+                <div id="furl" class="text-xl mb-4 bg-white text-indigo-800 p-4 rounded-lg shadow-md">Edit settings to get url</div>
+                <button id="copy" class="bg-white text-indigo-800 px-6 py-2 rounded-full hover:bg-indigo-100 transition duration-300 font-semibold">Copy</button>
             </div>
         </header>
         
-        <main class="p-10 lg:w-1/2">
+        <main class="p-10 lg:w-1/2 bg-white shadow-lg">
             <div class="max-w-2xl mx-auto">
                 <section class="mb-8">
-                    <h3 class="text-2xl font-semibold mb-2">Github URL</h3>
+                    <h3 class="text-2xl font-semibold mb-2 text-indigo-800">Github URL</h3>
                     <p class="text-gray-600 mb-2">Github URL for the project</p>
-                    <input name="url" id="url" type="text" placeholder="Enter Github URL" class="w-full p-2 border border-gray-300 rounded text-lg">
+                    <input name="url" id="url" type="text" placeholder="Enter Github URL" class="w-full p-3 border border-indigo-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </section>
 
                 <section class="mb-8">
-                    <h3 class="text-2xl font-semibold mb-2">Type</h3>
+                    <h3 class="text-2xl font-semibold mb-2 text-indigo-800">Type</h3>
                     <p class="text-gray-600 mb-2">Type of notifications</p>
                     <div class="grid grid-cols-2 gap-4">
                         <label class="flex items-center">
-                            <input name="io" id="io" type="checkbox" class="mr-2">
-                            Issue open
+                            <input name="io" id="io" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">Issue open</span>
                         </label>
                         <label class="flex items-center">
-                            <input name="ic" id="ic" type="checkbox" class="mr-2">
-                            Issue close
+                            <input name="ic" id="ic" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">Issue close</span>
                         </label>
                         <label class="flex items-center">
-                            <input name="po" id="po" type="checkbox" class="mr-2">
-                            PR open
+                            <input name="po" id="po" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">PR open</span>
                         </label>
                         <label class="flex items-center">
-                            <input name="pc" id="pc" type="checkbox" class="mr-2">
-                            PR close
+                            <input name="pc" id="pc" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">PR close</span>
                         </label>
                     </div>
                 </section>
 
                 <section>
-                    <h3 class="text-2xl font-semibold mb-2">Filters (Optional)</h3>
+                    <h3 class="text-2xl font-semibold mb-2 text-indigo-800">Filters (Optional)</h3>
                     <p class="text-gray-600 mb-4">Filter down the results based on certain conditions</p>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <div>
-                            <label for="labels" class="block mb-1">Labels:</label>
-                            <input id="labels" name="labels" type="text" placeholder="good-first-issue,documentation" class="w-full p-2 border border-gray-300 rounded">
+                            <label for="labels" class="block mb-1 text-gray-700">Labels:</label>
+                            <input id="labels" name="labels" type="text" placeholder="good-first-issue,documentation" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <p class="text-gray-500 text-sm mt-1">* comma separated list, uses AND</p>
                         </div>
 
                         <div>
-                            <label for="not-labels" class="block mb-1">Ignored Labels:</label>
-                            <input id="not-labels" name="not-labels" type="text" placeholder="ci,test" class="w-full p-2 border border-gray-300 rounded">
+                            <label for="not-labels" class="block mb-1 text-gray-700">Ignored Labels:</label>
+                            <input id="not-labels" name="not-labels" type="text" placeholder="ci,test" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <p class="text-gray-500 text-sm mt-1">* comma separated list, uses OR</p>
                         </div>
 
                         <div>
-                            <label for="users" class="block mb-1">Users:</label>
-                            <input id="users" name="users" type="text" placeholder="meain" class="w-full p-2 border border-gray-300 rounded">
+                            <label for="users" class="block mb-1 text-gray-700">Users:</label>
+                            <input id="users" name="users" type="text" placeholder="meain" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <p class="text-gray-500 text-sm mt-1">* comma separated list, uses AND</p>
                         </div>
 
                         <div>
-                            <label for="not-users" class="block mb-1">Ignored Users:</label>
-                            <input id="not-users" name="not-users" type="text" placeholder="dependabot,github" class="w-full p-2 border border-gray-300 rounded">
+                            <label for="not-users" class="block mb-1 text-gray-700">Ignored Users:</label>
+                            <input id="not-users" name="not-users" type="text" placeholder="dependabot,github" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <p class="text-gray-500 text-sm mt-1">* comma separated list, uses OR</p>
                         </div>
                     </div>
