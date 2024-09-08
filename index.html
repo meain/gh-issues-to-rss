@@ -1,277 +1,191 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>gh-issues-to-rss</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;400&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        --black: #000;
-        --white: #fff;
-        --grey: #ccc;
-        --green: #c4f198;
-        box-sizing: border-box;
-      }
-      .grey {
-        margin-bottom: 10px;
-        color: var(--grey);
-      }
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: "Inconsolata", monospace;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        height: 100vh;
-      }
-      .header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        background: var(--green);
-        color: var(--black);
-        padding: 50px 20px;
-        width: 50%;
-      }
-      .final-url {
-        text-align: center;
-        font-size: 1.5em;
-      }
-      h3 {
-        margin-bottom: 5px;
-        margin-top: 30px;
-      }
-      input {
-        border: 2px solid var(--grey);
-        border-radius: 4px;
-        font-family: "Inconsolata", monospace;
-      }
-      .content {
-        margin: 50px;
-        height: 100%;
-        max-width: 700px;
-        width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        padding: 50px;
-      }
-      input#url {
-        font-size: 1.4rem;
-        font-weight: 100;
-        padding: 10px 20px;
-        width: 100%;
-        margin-bottom: 20px;
-      }
-      .modes {
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-      }
-      .modes > input {
-        margin-right: 5px;
-      }
-      .filters-inner {
-        display: flex;
-        flex-wrap: wrap;
-      }
-      .filters-inner > label {
-        margin-right: 5px;
-        display: flex;
-        align-items: center;
-      }
-      .filters-inner > input {
-        flex: 1;
-        font-weight: 100;
-        padding: 5px 10px;
-      }
-      .filters > span {
-        text-align: right;
-        width: 100%;
-        display: block;
-      }
-
-      @media only screen and (max-width: 900px) {
-        body {
-          display: unset;
-        }
-        .header {
-          width: 100%;
-        }
-        .content {
-          margin-top: 0px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      <h1>gh-issues-to-rss</h1>
-      <div class="final-url">
-        <div id="furl">Edit settings to get url</div>
-        <button id="copy">Copy</button>
-      </div>
-    </div>
-    <div class="content">
-      <h3>Github URL</h3>
-      <span class="grey">Github URL for the project</span>
-      <div class="url">
-        <input
-          name="url"
-          id="url"
-          type="text"
-          value=""
-          placeholder="Enter Github URL"
-        />
-      </div>
-      <h3>Type</h3>
-      <span class="grey">Type of notifications</span>
-      <div class="modes">
-        <div>
-          <input name="io" id="io" type="checkbox" value="" />
-          <label for="io">Issue open</label>
-        </div>
-        <div>
-          <input name="ic" id="ic" type="checkbox" value="" />
-          <label for="ic">Issue close</label>
-        </div>
-        <div>
-          <input name="po" id="po" type="checkbox" value="" />
-          <label for="po">PR open</label>
-        </div>
-        <div>
-          <input name="pc" id="pc" type="checkbox" value="" />
-          <label for="pc">PR close</label>
-        </div>
-      </div>
-      <h3>Filters (Optional)</h3>
-      <span class="grey"
-        >Filter down the results based on certain conditions</span
-      >
-      <div class="filters">
-        <div class="filters-inner">
-          <label for="labels">Labels:</label>
-          <input
-            id="labels"
-            name="labels"
-            type="text"
-            value=""
-            placeholder="good-first-issue,documentation"
-          />
-        </div>
-        <span class="grey">* comma separated list, uses AND</span>
-      </div>
-
-      <div class="filters">
-        <div class="filters-inner">
-          <label for="not-labels">Ignored Labels:</label>
-          <input
-            id="not-labels"
-            name="not-labels"
-            type="text"
-            value=""
-            placeholder="ci,test"
-          />
-        </div>
-        <span class="grey">* comma separated list, uses OR</span>
-      </div>
-
-      <div class="filters">
-        <div class="filters-inner">
-          <label for="users">Users:</label>
-          <input
-            id="users"
-            name="users"
-            type="text"
-            value=""
-            placeholder="meain"
-          />
-        </div>
-        <span class="grey">* comma separated list, uses AND</span>
-      </div>
-
-      <div class="filters">
-        <div class="filters-inner">
-          <label for="not-users">Ignored Users:</label>
-          <input
-            id="not-users"
-            name="not-users"
-            type="text"
-            value=""
-            placeholder="dependabot,github"
-          />
-        </div>
-        <span class="grey">* comma separated list, uses OR</span>
-      </div>
-    </div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;400&display=swap" rel="stylesheet">
     <script>
-      window.onload = function () {
-        const urlInput = document.getElementById("url");
-        const ioInput = document.getElementById("io");
-        const icInput = document.getElementById("ic");
-        const poInput = document.getElementById("po");
-        const pcInput = document.getElementById("pc");
-        const labelsInput = document.getElementById("labels");
-        const nlabelsInput = document.getElementById("not-labels");
-        const usersInput = document.getElementById("users");
-        const nusersInput = document.getElementById("not-users");
-        const furl = document.getElementById("furl");
-        const copy = document.getElementById("copy");
-
-        function updateUrl() {
-          let finalURL = "Invalid URL";
-          let qps = [];
-
-          let url = urlInput.value;
-          if (url.endsWith("/")) {url = url.slice(0, -1)}
-
-          const splits = url.split("/");
-
-          if (!url.startsWith("https://github.com/") || splits.length != 5) { return }
-
-          finalURL = window.location.origin + "/" + splits.splice(3, 4).join("/");
-
-          if (ioInput.checked) {qps.push("m=io")}
-          if (icInput.checked) {qps.push("m=ic")}
-          if (poInput.checked) {qps.push("m=po")}
-          if (pcInput.checked) {qps.push("m=pc")}
-
-          if (labelsInput.value.length > 0) {qps = qps.concat(labelsInput.value.split(",").map((l) => "l=" + l))}
-          if (nlabelsInput.value.length > 0) {qps = qps.concat(nlabelsInput.value.split(",").map((l) => "nl=" + l))}
-          if (usersInput.value.length > 0) {qps = qps.concat(usersInput.value.split(",").map((l) => "u=" + l))}
-          if (nusersInput.value.length > 0) {qps = qps.concat(nusersInput.value.split(",").map((l) => "nu=" + l))}
-
-          if (qps.length > 0) {finalURL += "?" + qps.join("&")}
-          furl.innerText = finalURL;
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inconsolata': ['Inconsolata', 'monospace'],
+                    },
+                    colors: {
+                        'custom-green': '#c4f198',
+                    },
+                },
+            },
         }
-
-        const inputs = [
-          urlInput, ioInput, icInput, poInput, pcInput,
-          labelsInput, nlabelsInput, usersInput, nusersInput
-        ];
-        for (let i of inputs) {
-          i.onchange = function () {updateUrl();};
-        }
-
-        copy.onclick = function () {
-          navigator.clipboard.writeText(furl.innerText);
-          copy.innerText = "Copied!";
-          setTimeout(function () {
-            copy.innerText = "Copy";
-          }, 1000);
-        };
-      };
     </script>
-  </body>
+</head>
+<body class="font-inconsolata bg-gray-100 min-h-screen">
+    <div class="flex flex-col lg:flex-row h-screen">
+        <header class="bg-indigo-600 text-white p-10 lg:w-1/2 flex flex-col items-center justify-between lg:h-screen lg:overflow-y-auto">
+            <div class="flex flex-col items-center justify-center flex-grow">
+                <h1 class="text-5xl font-bold mb-6 hover-lift">gh-issues-to-rss</h1>
+                <div class="text-center">
+                    <div id="furl" class="text-xl mb-4 bg-white text-indigo-800 p-4 rounded-lg shadow-md hover-lift">Edit settings to get url</div>
+                    <button id="copy" class="bg-white text-indigo-800 px-6 py-2 rounded-full hover:bg-indigo-100 transition duration-300 font-semibold hover-lift">Copy</button>
+                </div>
+            </div>
+            <a href="https://github.com/meain/gh-issues-to-rss" target="_blank" rel="noopener noreferrer" class="text-white hover:text-indigo-200 transition duration-300 ease-in-out mt-8">View on GitHub</a>
+        </header>
+        
+        <main class="p-10 lg:w-1/2 bg-white shadow-lg overflow-y-auto h-screen">
+            <div class="max-w-2xl mx-auto">
+                <section class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-2 text-indigo-800">Github URL</h3>
+                    <p class="text-gray-600 mb-2">Github URL for the project</p>
+                    <input name="url" id="url" type="text" placeholder="Enter Github URL" class="w-full p-3 border border-indigo-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 hover-lift">
+                </section>
+
+                <section class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-2 text-indigo-800">Type</h3>
+                    <p class="text-gray-600 mb-2">Type of notifications</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center">
+                            <input name="io" id="io" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">Issue open</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input name="ic" id="ic" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">Issue close</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input name="po" id="po" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">PR open</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input name="pc" id="pc" type="checkbox" class="mr-2 form-checkbox text-indigo-600">
+                            <span class="text-gray-700">PR close</span>
+                        </label>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-2xl font-semibold mb-2 text-indigo-800">Filters (Optional)</h3>
+                    <p class="text-gray-600 mb-4">Filter down the results based on certain conditions</p>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label for="labels" class="block mb-1 text-gray-700">Labels:</label>
+                            <div class="relative">
+                                <input id="labels" name="labels" type="text" placeholder="good-first-issue,documentation" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. All labels must match (AND logic).">ⓘ</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="not-labels" class="block mb-1 text-gray-700">Ignored Labels:</label>
+                            <div class="relative">
+                                <input id="not-labels" name="not-labels" type="text" placeholder="ci,test" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. Any label matches (OR logic).">ⓘ</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="users" class="block mb-1 text-gray-700">Users:</label>
+                            <div class="relative">
+                                <input id="users" name="users" type="text" placeholder="meain" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. All users must match (AND logic).">ⓘ</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="not-users" class="block mb-1 text-gray-700">Ignored Users:</label>
+                            <div class="relative">
+                                <input id="not-users" name="not-users" type="text" placeholder="dependabot,github" class="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-3 text-gray-400 cursor-help" title="Comma-separated list. Any user matches (OR logic).">ⓘ</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onload = function () {
+            const urlInput = document.getElementById("url");
+            const ioInput = document.getElementById("io");
+            const icInput = document.getElementById("ic");
+            const poInput = document.getElementById("po");
+            const pcInput = document.getElementById("pc");
+            const labelsInput = document.getElementById("labels");
+            const nlabelsInput = document.getElementById("not-labels");
+            const usersInput = document.getElementById("users");
+            const nusersInput = document.getElementById("not-users");
+            const furl = document.getElementById("furl");
+            const copy = document.getElementById("copy");
+            const generateButton = document.getElementById("generate");
+            const rssFeedUrlSection = document.getElementById("rss-feed-url-section");
+            const rssFeedUrlInput = document.getElementById("rss-feed-url");
+            const copyRssButton = document.getElementById("copy-rss");
+
+            function updateUrl() {
+                let finalURL = "Invalid URL";
+                let qps = [];
+
+                let url = urlInput.value;
+                if (url.endsWith("/")) {url = url.slice(0, -1)}
+
+                const splits = url.split("/");
+
+                if (!url.startsWith("https://github.com/") || splits.length != 5) { return }
+
+                finalURL = window.location.origin + "/" + splits.splice(3, 4).join("/");
+
+                if (ioInput.checked) {qps.push("m=io")}
+                if (icInput.checked) {qps.push("m=ic")}
+                if (poInput.checked) {qps.push("m=po")}
+                if (pcInput.checked) {qps.push("m=pc")}
+
+                if (labelsInput.value.length > 0) {qps = qps.concat(labelsInput.value.split(",").map((l) => "l=" + l))}
+                if (nlabelsInput.value.length > 0) {qps = qps.concat(nlabelsInput.value.split(",").map((l) => "nl=" + l))}
+                if (usersInput.value.length > 0) {qps = qps.concat(usersInput.value.split(",").map((l) => "u=" + l))}
+                if (nusersInput.value.length > 0) {qps = qps.concat(nusersInput.value.split(",").map((l) => "nu=" + l))}
+
+                if (qps.length > 0) {finalURL += "?" + qps.join("&")}
+                return finalURL;
+            }
+
+            const inputs = [
+                urlInput, ioInput, icInput, poInput, pcInput,
+                labelsInput, nlabelsInput, usersInput, nusersInput
+            ];
+            for (let i of inputs) {
+                i.onchange = function () {
+                    furl.innerText = updateUrl();
+                };
+            }
+
+            copy.onclick = function () {
+                navigator.clipboard.writeText(furl.innerText);
+                copy.innerText = "Copied!";
+                setTimeout(function () {
+                    copy.innerText = "Copy";
+                }, 1000);
+            };
+
+            generateButton.onclick = function (e) {
+                e.preventDefault();
+                const generatedUrl = updateUrl();
+                rssFeedUrlInput.value = generatedUrl;
+                rssFeedUrlSection.classList.remove("hidden");
+            };
+
+            copyRssButton.onclick = function () {
+                navigator.clipboard.writeText(rssFeedUrlInput.value);
+                copyRssButton.innerText = "Copied!";
+                setTimeout(function () {
+                    copyRssButton.innerText = "Copy";
+                }, 1000);
+            };
+        };
+    </script>
+
+</body>
 </html>
