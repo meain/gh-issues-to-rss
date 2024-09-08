@@ -23,12 +23,15 @@
 </head>
 <body class="font-inconsolata bg-gray-100 min-h-screen flex flex-col">
     <div class="flex-grow flex flex-col lg:flex-row">
-        <header class="bg-indigo-600 text-white p-10 lg:w-1/2 flex flex-col items-center justify-center">
-            <h1 class="text-5xl font-bold mb-6 hover-lift">gh-issues-to-rss</h1>
-            <div class="text-center">
-                <div id="furl" class="text-xl mb-4 bg-white text-indigo-800 p-4 rounded-lg shadow-md hover-lift">Edit settings to get url</div>
-                <button id="copy" class="bg-white text-indigo-800 px-6 py-2 rounded-full hover:bg-indigo-100 transition duration-300 font-semibold hover-lift">Copy</button>
+        <header class="bg-indigo-600 text-white p-10 lg:w-1/2 flex flex-col items-center justify-between">
+            <div class="flex flex-col items-center">
+                <h1 class="text-5xl font-bold mb-6 hover-lift">gh-issues-to-rss</h1>
+                <div class="text-center">
+                    <div id="furl" class="text-xl mb-4 bg-white text-indigo-800 p-4 rounded-lg shadow-md hover-lift">Edit settings to get url</div>
+                    <button id="copy" class="bg-white text-indigo-800 px-6 py-2 rounded-full hover:bg-indigo-100 transition duration-300 font-semibold hover-lift">Copy</button>
+                </div>
             </div>
+            <a href="https://github.com/meain/gh-issues-to-rss" target="_blank" rel="noopener noreferrer" class="text-white hover:text-indigo-200 transition duration-300 ease-in-out mt-8">View on GitHub</a>
         </header>
         
         <main class="p-10 lg:w-1/2 bg-white shadow-lg">
@@ -176,8 +179,5 @@
         };
     </script>
 
-    <footer class="bg-indigo-600 text-white p-4 text-center w-full mt-auto">
-        <p>&copy; 2023 gh-issues-to-rss. All rights reserved. <a href="https://github.com/meain/gh-issues-to-rss" target="_blank" rel="noopener noreferrer" class="text-white hover:text-indigo-200 transition duration-300 ease-in-out">View on GitHub</a></p>
-    </footer>
 </body>
 </html>
