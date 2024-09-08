@@ -109,6 +109,10 @@
             const nusersInput = document.getElementById("not-users");
             const furl = document.getElementById("furl");
             const copy = document.getElementById("copy");
+            const generateButton = document.getElementById("generate");
+            const rssFeedUrlSection = document.getElementById("rss-feed-url-section");
+            const rssFeedUrlInput = document.getElementById("rss-feed-url");
+            const copyRssButton = document.getElementById("copy-rss");
 
             function updateUrl() {
                 let finalURL = "Invalid URL";
@@ -134,7 +138,7 @@
                 if (nusersInput.value.length > 0) {qps = qps.concat(nusersInput.value.split(",").map((l) => "nu=" + l))}
 
                 if (qps.length > 0) {finalURL += "?" + qps.join("&")}
-                furl.innerText = finalURL;
+                return finalURL;
             }
 
             const inputs = [
@@ -142,7 +146,9 @@
                 labelsInput, nlabelsInput, usersInput, nusersInput
             ];
             for (let i of inputs) {
-                i.onchange = function () {updateUrl();};
+                i.onchange = function () {
+                    furl.innerText = updateUrl();
+                };
             }
 
             copy.onclick = function () {
@@ -152,7 +158,26 @@
                     copy.innerText = "Copy";
                 }, 1000);
             };
+
+            generateButton.onclick = function (e) {
+                e.preventDefault();
+                const generatedUrl = updateUrl();
+                rssFeedUrlInput.value = generatedUrl;
+                rssFeedUrlSection.classList.remove("hidden");
+            };
+
+            copyRssButton.onclick = function () {
+                navigator.clipboard.writeText(rssFeedUrlInput.value);
+                copyRssButton.innerText = "Copied!";
+                setTimeout(function () {
+                    copyRssButton.innerText = "Copy";
+                }, 1000);
+            };
         };
     </script>
+
+    <footer class="bg-indigo-600 text-white p-4 text-center w-full mt-auto">
+        <p>&copy; 2023 gh-issues-to-rss. All rights reserved. <a href="https://github.com/meain/gh-issues-to-rss" target="_blank" rel="noopener noreferrer" class="text-white hover:text-indigo-200 transition duration-300 ease-in-out">View on GitHub</a></p>
+    </footer>
 </body>
 </html>
